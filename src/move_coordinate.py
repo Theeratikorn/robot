@@ -2,14 +2,16 @@ import time
 import sys
 import numpy as np
 import calculation as cal  # Importing the user-provided module
-import demo_control_servo as servo  # Importing the servo library (renamed file to servo_control)
+import control_servo as servo  # Importing the servo library (renamed file to servo_control)
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
+import movement 
 
 # Wrapper for movej function using the user's module
 def move(x, y, z, phi):
     print(f"\nPlanning move to: x={x}, y={y}, z={z}, phi={phi}\n")
     result = cal.movej(x, y, z, phi)  # phi already converted to radians in robot_loop
+    
     if result:
         # Convert result from degrees to radians
         result_rad = [np.deg2rad(angle) for angle in result]
@@ -19,19 +21,22 @@ def move(x, y, z, phi):
         print("Movej failed due to invalid joint angles.\n")
         return None
 
-def perform_servo_movement(joint_angles, current):
+def perform_servo_movement(joint_angles, previous_th):
     """Perform servo movements based on joint angles."""
     th1, th2, th3, th4 = joint_angles
+    p_th1, p_th2, p_th3, p_th4 = previous_th
+
     print(f"\nPerforming servo movements:")
     print(f"Base: {np.rad2deg(th1)}, Link1: {np.rad2deg(th2)}, Link2: {np.rad2deg(th3)}, Whist: {np.rad2deg(th4)}\n")
     
     # Move each servo with gradual movement
-    servo.move_base(current[0], th1)
-    servo.move_link1(current[1], th2)
-    servo.move_link2(current[2], th3)
-    servo.move_whist(current[3], th4)
+    servo.move_base(p_th1, th1)
+    servo.move_link1(p_th2, th2)
+    servo.move_link2(p_th3, th3)
+    servo.move_whist(p_th4, th4)
 
     print("Servo movements completed.\n")
+    return (th1, th2, th3, th4)
 
 def joints_plot(theta1, theta2, theta3, theta4):
     print(f"\nPlotting joints with angles: {theta1}, {theta2}, {theta3}, {theta4}\n")
@@ -79,7 +84,7 @@ def forward_kinematics_control(current):
 
     def on_confirm(event):
         base, link1, link2, whist = update_servo(None)
-        perform_servo_movement([base, link1, link2, whist], current)
+        perform_servo_movement([base, link1, link2, whist], previous_th)
         print("Servo movements confirmed.\n")
 
     def on_exit(event):
@@ -93,7 +98,8 @@ def forward_kinematics_control(current):
     return current
 
 def robot_loop():
-    current = [0, 90, 45, -90]  # Initialize current joint angles in degrees
+    previos_theta = [0, 90, 45, -90]  # Initialize current joint angles in degrees
+    movement.Home()
 
     while True:
         try:
@@ -117,18 +123,20 @@ def robot_loop():
                     # Convert to radians before processing
                     current_rad = [np.deg2rad(angle) for angle in current]
                     goal_rad = [np.deg2rad(angle) for angle in goal]
+
                     print(f"Current joint angles (radians): {current_rad}\n")
                     print(f"Goal joint angles (radians): {goal_rad}\n")
 
                     # Simulate step calculation without visualization
                     steps = movestep_theta(current_rad, goal_rad, step=100)
+
                     if steps:
                         print("Steps calculated successfully.\n")
                     else:
                         print("Failed to calculate steps.\n")
 
                     # Perform servo movements
-                    perform_servo_movement(goal_rad, current)
+                    previos_theta = perform_servo_movement(goal_rad, previos_theta)
 
                 except ValueError:
                     print("Invalid command format. Use: goal x y z phi\n")
@@ -136,8 +144,18 @@ def robot_loop():
             elif command == "forward":
                 current = forward_kinematics_control(current)
 
+            elif command == "move_forward":
+                th1 = int(input("Theta 1 : "))
+                th2 = int(input("Theta 2 : "))
+                th3 = int(input("Theta 3 : "))
+                th4 = int(input("Theta 4 : "))
+
+                goal = (th1, th2, th3, th4)
+
+                previos_theta = perform_servo_movement(goal, previos_theta)
+                
             else:
-                print("Unknown command. Use: goal x y z phi or forward\n")
+                print("Unknown command. Use: goal x y z phi or forward or move_forward\n")
         except Exception as e:
             print(f"An error occurred: {e}. Waiting for the next command...\n")
 
