@@ -1,0 +1,16 @@
+{
+    "link_lengths": {
+      "l1": 20,
+      "l2": 15,
+      "l3": 27,
+      "l4": 15
+    },
+    "phi": 0,
+    "joint_limits": {
+      "th1": { "left": -135, "right": 135 },
+      "th2": { "left": 0, "right": 260 },
+      "th3": { "left": -80, "right": 80 },
+      "th4": { "left": -80, "right": 80 }
+    }
+  }
+  
