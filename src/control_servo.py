@@ -8,7 +8,6 @@ from time import sleep
 import threading
  
 
-<<<<<<< HEAD
 from adafruit_servokit import ServoKit
 
 from time import sleep
@@ -22,13 +21,6 @@ import threading
 
 # kit.servo[0].angle = 30
 
-=======
-
-# kit.servo[0].angle = 0
-# sleep(1)
-# kit.servo[0].angle = 30
- 
->>>>>>> 68e2ec7 (first commit)
 # Initialize ServoKit for PCA9685 with 16 channels
 
 kit = ServoKit(channels=16)
@@ -50,7 +42,6 @@ CHANNEL_WHIST = 3
 CHANNEL_ROTATE = 4
 
 lower_right = 4
-<<<<<<< HEAD
 
 lower_left = 5
 
@@ -63,13 +54,6 @@ middle = 8
 #test1 = 15
 
 #test2 = 14
-=======
-lower_left = 5
-upper_left  = 6
-upper_right = 7
-middle = 8
-
->>>>>>> 68e2ec7 (first commit)
 
 
 # Define servo angle to PWM pulse conversion function (optional if needed)
@@ -83,17 +67,11 @@ def angle_to_pwm(angle):
     max_pulse = 2500  # Max pulse length out of 4096
 
     pulse = min_pulse + (max_pulse - min_pulse) * (angle / 270)
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 68e2ec7 (first commit)
     return int(pulse)
 
 def gradual_move(channel, start_angle, end_angle,actuation_range = 270, step=1, delay=0.02):
 
     """Move servo gradually from start_angle to end_angle."""
-<<<<<<< HEAD
 
     min_pulse = 500  # Min pulse length out of 4096
 
@@ -107,12 +85,6 @@ def gradual_move(channel, start_angle, end_angle,actuation_range = 270, step=1, 
 
     print(f"start {start_angle} stop {end_angle}")
 
-=======
-    kit = ServoKit(channels=16)
-    kit.servo[channel].actuation_range = 270
-    kit.servo[channel].set_pulse_width_range(500, 2500)
-
->>>>>>> 68e2ec7 (first commit)
     if start_angle > end_angle:
 
         step = -step
@@ -132,13 +104,9 @@ def move_base(current, th1):
     """Move base servo gradually."""
 
     angle = np.rad2deg(th1) + 135
-<<<<<<< HEAD
 
     current = np.rad2deg(current) + 135
 
-=======
-    current = np.rad2deg(th1) + 135
->>>>>>> 68e2ec7 (first commit)
     gradual_move(CHANNEL_BASE, current, angle)
 
 def move_link1(current, th2):
@@ -158,13 +126,9 @@ def move_link2(current, th3):
     """Move Link2 servo gradually."""
 
     angle = np.rad2deg(th3) + 135
-<<<<<<< HEAD
 
     current = np.rad2deg(current) + 135
 
-=======
-    current = np.rad2deg(th3) + 135
->>>>>>> 68e2ec7 (first commit)
     gradual_move(CHANNEL_LINK2, current, angle)
 
     print("movelink2")
@@ -173,14 +137,10 @@ def move_whist(current, th4):
 
     """Move whist servo gradually."""
 
-    angle = np.rad2deg(th4) + 135
-<<<<<<< HEAD
+    angle = -np.rad2deg(th4) + 135
 
-    current = np.rad2deg(current) + 135    
+    current = -np.rad2deg(current) + 135    
 
-=======
-    current = np.rad2deg(th4) + 135    
->>>>>>> 68e2ec7 (first commit)
     gradual_move(CHANNEL_WHIST, current, angle)
 
 def rotate_whist(current, th5):
@@ -188,32 +148,20 @@ def rotate_whist(current, th5):
     """Rotate whist servo gradually."""
 
     angle = np.rad2deg(th5) + 135
-<<<<<<< HEAD
 
     current = np.rad2deg(current) + 135
 
     gradual_move(CHANNEL_ROTATE, current, angle)
 
 def finger_gripper_close():
-=======
-    current = np.rad2deg(th5) + 135
-    gradual_move(CHANNEL_ROTATE, current, angle)
-
-def finger_gripper_close(current):
->>>>>>> 68e2ec7 (first commit)
 
     """close finger gripper"""
 
     angle_upper_right_max = 0
-<<<<<<< HEAD
-
-=======
->>>>>>> 68e2ec7 (first commit)
     angle_upper_right_min = 80
 
 
     angle_upper_left_max = 80
-<<<<<<< HEAD
 
     angle_upper_left_min = 0
 
@@ -250,45 +198,14 @@ def finger_gripper_close(current):
         thread.join()
 
 def finger_gripper_open():
-=======
-    angle_upper_left_min = 0
-
-    angle_midle_max = 80    
-    angle_midle_min = 0
-
-    # gradual_move(upper_right, angle_upper_right_max, angle_upper_right_min)
-    # gradual_move(upper_left, angle_upper_left_max, angle_upper_left_min)
-    # gradual_move(middle, angle_midle_max, angle_midle_min)
-    threads = [
-
-        threading.Thread(target=gradual_move, args=(upper_right, angle_upper_right_max, angle_upper_right_min)),
-        threading.Thread(target=gradual_move, args=(upper_left, angle_upper_left_max, angle_upper_left_min)),        
-        threading.Thread(target=gradual_move, args=(middle, angle_midle_max, angle_midle_min)),        
-        
-        ]
-    # Start all threads
-    for thread in threads:
-        thread.start()
-
-    # Wait for all threads to complete
-    for thread in threads:
-        thread.join()
-
-def finger_gripper_open(current):
->>>>>>> 68e2ec7 (first commit)
 
     """ open finger gripper """
 
     angle_upper_right_max = 0
-<<<<<<< HEAD
-
-=======
->>>>>>> 68e2ec7 (first commit)
     angle_upper_right_min = 80
 
 
     angle_upper_left_max = 80
-<<<<<<< HEAD
 
     angle_upper_left_min = 0
 
@@ -351,47 +268,3 @@ def control_all_servos_with_threads(previous,goal):
     print("All servo movements are completed.")
 
  
-=======
-    angle_upper_left_min = 0
-
-    angle_midle_max = 80    
-    angle_midle_min = 0
-    threads = [
-
-        # gradual_move(upper_right, angle_upper_right_min, angle_upper_right_max)
-        # gradual_move(upper_left, angle_upper_left_min, angle_upper_left_max)
-        # gradual_move(middle, angle_midle_min, angle_midle_max)
-
-        threading.Thread(target=gradual_move, args=(upper_right, angle_upper_right_min, angle_upper_right_max)),
-        threading.Thread(target=gradual_move, args=(upper_left, angle_upper_left_min, angle_upper_left_max)),        
-        threading.Thread(target=gradual_move, args=(middle, angle_midle_min, angle_midle_max)),        
-        
-        ]
-    # Start all threads
-    for thread in threads:
-        thread.start()
-
-    # Wait for all threads to complete
-    for thread in threads:
-        thread.join()
-
-def control_all_servos_with_threads():
-    # Create threads for each servo movement
-    threads = [
-        threading.Thread(target=move_base, args=(np.deg2rad(0), np.deg2rad(45))),
-        threading.Thread(target=move_link1, args=(np.deg2rad(0), np.deg2rad(90))),
-        threading.Thread(target=move_link2, args=(np.deg2rad(0), np.deg2rad(45))),
-        threading.Thread(target=move_whist, args=(np.deg2rad(0), np.deg2rad(30))),
-        # threading.Thread(target=rotate_whist, args=(np.deg2rad(0), np.deg2rad(60))),
-    ]
-
-    # Start all threads
-    for thread in threads:
-        thread.start()
-
-    # Wait for all threads to complete
-    for thread in threads:
-        thread.join()
-
-    print("All servo movements are completed.")
->>>>>>> 68e2ec7 (first commit)
